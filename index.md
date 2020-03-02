@@ -1,3 +1,4 @@
-# Welcome to my blog
+# Dream Dimensions
 
-I'm glad you are here. I plan to talk about ...
+Always dreaming up and exploring new ideas, passioned with<br>
+innovationing and building cool things.
