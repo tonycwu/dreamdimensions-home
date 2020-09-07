@@ -1,10 +1,174 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>Dream Dimensions</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dream Dimensions</title>
+    <style>
+body { margin: 0; height: 100vh}
+
+canvas {
+  display: block;
+}
+
+.title {
+    font-size: 60px;
+    color: white;
+    position: absolute;
+    top: 30%;
+    font-family: sans-serif;
+    background: #2960fd63;
+    padding: 10px 50px;
+    width: 100%; box-sizing: border-box;
+}
+    </style>
 </head>
+
 <body>
-<br>
-<h1>Dream Dimensions</h1>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
+    <script>
+        var scene = new THREE.Scene();
+
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        var renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.setClearColor("#000000");
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        document.body.appendChild(renderer.domElement);
+
+        window.addEventListener('resize', ()=>{
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+
+            camera.updateProjectionMatrix();
+
+        });
+        
+        var count = 0;
+
+        // var geometry = new THREE.SphereGeometry(1, 60, 10);
+
+        var raycaster = new THREE.Raycaster();
+        var mouse = new THREE.Vector2();
+
+        var geometry = new THREE.BoxGeometry(1, 1, 1);
+        
+        // var material = new THREE.MeshLambertMaterial({color: 0xFFff00});
+        var material = new THREE.MeshLambertMaterial({color: Math.floor(Math.random()*255*255*255)});
+        
+        // var mesh = new THREE.Mesh(geometry, material);
+        // mesh.rotation.set(45, 20, 10);
+        // mesh.position.x = 0.8;
+        // mesh.position.y = 0.9;
+        // mesh.position.z = 1;
+
+        // mesh.scale.set(1,1,1);
+
+        for (var i=0; i<5; i++) {
+            var mesh = new THREE.Mesh(geometry, material);
+            mesh.position.x = (Math.random() - 0.5) * 10;
+            mesh.position.y = (Math.random() - 0.5) * 10;
+            mesh.position.z = (Math.random() - 0.5) * 10;
+            scene.add(mesh);
+        }
+
+        var light = new THREE.PointLight(0xFFFFFF, 1, 1000);
+        light.position.set(0, 0, 0);
+        scene.add(light);
+
+        light = new THREE.PointLight(0xFFFFFF, 2, 1000);
+        light.position.set(0, 0, 25);
+        scene.add(light);
+
+
+        var lastTimestamp = Date.now();
+        var framerateElm = document.querySelector('.framerate');
+        var lastDiff = 0;
+
+        var render = function() {
+            requestAnimationFrame(render);
+
+            let now = Date.now();
+            // if (framerateElm) {
+            //     let diff = Math.max(now-lastTimestamp, 1);
+                
+            //     if (Math.abs(lastDiff-diff)>1) {
+            //         framerateElm.innerHTML = Math.floor(1000 / diff);
+            //         lastDiff = diff;
+            //     }
+
+            //     lastTimestamp = now;
+
+            // } else {
+            //   framerateElm = document.querySelector('.framerate')
+            // }
+
+            if (now%5===0 && count++<=2000) {
+                // console.log('added box', scene.children.length);
+                let materialx = new THREE.MeshLambertMaterial({color: Math.floor(Math.random()*255*255*255)});
+                var mesh = new THREE.Mesh(geometry, materialx);
+                mesh.position.x = (Math.random() - 0.5) * 100;
+                mesh.position.y = (Math.random() - 0.5) * 100;
+                mesh.position.z = (Math.random() - 0.5) * 100;
+                scene.add(mesh);
+            }
+
+            // camera.position.x += 0.01;
+            camera.rotation.x += 0.001;
+            camera.rotation.y += 0.001;
+            camera.rotation.z += 0.001;
+            // camera.position.x += 0.01;
+
+            renderer.render(scene, camera);
+        }
+
+        function onMouseMove(event) {
+            event.preventDefault();
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            raycaster.setFromCamera(mouse, camera);
+            
+            var intersects = raycaster.intersectObjects(scene.children, true);
+
+            // console.log('mouse:', mouse, intersects);
+
+            for (var i=0; i<intersects.length; i++) {
+                // console.log(intersects[i]);
+                // intersects[i].object.material.color.set(0xff0000);
+
+                var obj = intersects[i];
+
+                this.tl = new TimelineMax();
+                this.tl.to(obj.object.scale, 1, { x: 2, ease: Expo.easeOut});
+                this.tl.to(obj.object.scale, 0.5, { x: 0.6, ease: Expo.easeOut});
+                this.tl.to(obj.object.position, 0.5, { x: 2, ease: Expo.easeOut});
+                this.tl.to(obj.object.rotation, 0.5, { y:  Math.PI*0.5, ease: Expo.easeOut}, "=-1.5");
+            }
+
+        }
+        
+        render();
+
+        
+        window.addEventListener('mousemove', onMouseMove);
+
+
+    </script>
+
+    <!-- <div class="framerate" style="position:absolute;top:0;left:0;width:40px;height:30px;background:black;color:green;font-size:20px;font-family:sans-serif">
+     --
+    </div> -->
+    <div class="title">
+        DREAM DIMENSIONS
+    </div>
+
 </body>
+
 </html>
